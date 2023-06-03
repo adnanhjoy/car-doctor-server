@@ -34,14 +34,27 @@ async function run() {
             res.send(service)
         })
 
-        app.get('/services/:id', async(req, res) => {
+        app.get('/services/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: new ObjectId(id)};
+            const query = { _id: new ObjectId(id) };
             const service = await servicesCollection.findOne(query);
             res.send(service);
         })
 
-        app.post('/orders', async(req, res) => {
+        app.get('/orders', async (req, res) => {
+            let query = {};
+            if (req.query.email) {
+                query = {
+                    email: req.query.email
+                };
+            }
+            const cursor = ordersCollection.find(query);
+            const orders = await cursor.toArray();
+            console.log(req.query)
+            res.send(orders)
+        })
+
+        app.post('/orders', async (req, res) => {
             const order = req.body;
             const result = await ordersCollection.insertOne(order);
             res.send(result);
