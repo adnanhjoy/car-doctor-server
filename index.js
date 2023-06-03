@@ -25,6 +25,7 @@ async function run() {
         await client.connect();
         // Send a ping to confirm a successful connection
         const servicesCollection = client.db("cardoctor").collection('services');
+        const ordersCollection = client.db("cardoctor").collection('orders');
 
         app.get('/services', async (req, res) => {
             const query = {};
@@ -38,6 +39,12 @@ async function run() {
             const query = {_id: new ObjectId(id)};
             const service = await servicesCollection.findOne(query);
             res.send(service);
+        })
+
+        app.post('/orders', async(req, res) => {
+            const order = req.body;
+            const result = await ordersCollection.insertOne(order);
+            res.send(result);
         })
 
     } finally {
