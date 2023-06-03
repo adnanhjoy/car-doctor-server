@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
@@ -24,14 +24,20 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
         // Send a ping to confirm a successful connection
-        const userCollection = client.db("cardoctor").collection('services');
+        const servicesCollection = client.db("cardoctor").collection('services');
 
         app.get('/services', async (req, res) => {
             const query = {};
-            const cursor = userCollection.find(query);
+            const cursor = servicesCollection.find(query);
             const service = await cursor.toArray();
-            console.log(service)
             res.send(service)
+        })
+
+        app.get('/services/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = {_id: new ObjectId(id)};
+            const service = await servicesCollection.findOne(query);
+            res.send(service);
         })
 
     } finally {
